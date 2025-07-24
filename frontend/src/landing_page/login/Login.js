@@ -35,7 +35,7 @@ export default function Login() {
         e.preventDefault();
         try {
             const { data } = await axios.post(
-                "http://localhost:3002/login", // Fixed port number
+                `${process.env.REACT_APP_API_URL}/login`,
                 {
                     ...inputValue,
                 },
@@ -46,7 +46,7 @@ export default function Login() {
             if (success) {
                 handleSuccess(message);
                 setTimeout(() => {
-                    window.location.href = 'http://localhost:3001/dashboard';
+                    window.location.href = 'https://zerodha-dashboard-2cvo.onrender.com';
                 }, 1000);
             } else {
                 handleError(message);
