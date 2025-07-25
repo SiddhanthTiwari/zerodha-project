@@ -46,7 +46,7 @@ export default function Login() {
             if (success) {
                 handleSuccess(message);
                 setTimeout(() => {
-                    window.location.href = 'https://zerodha-dashboard-2cvo.onrender.com';
+                    window.location.href = `${process.env.REACT_APP_DASHBOARD_URL}`;
                 }, 1000);
             } else {
                 handleError(message);
