@@ -1,20 +1,48 @@
 import React, { useState, useEffect } from "react";
-import axios, { all } from "axios";
+import axios from "axios"; // removed unnecessary 'all' import
 import { VerticalGraph } from "./VerticalGraph";
-
-// import { holdings } from "../data/data";
 
 const Holdings = () => {
   const [allHoldings, setAllHoldings] = useState([]);
+  const [loading, setLoading] = useState(true); // Added loading state
+  const [error, setError] = useState(null); // Added error state
 
   useEffect(() => {
-    axios.get(`${process.env.REACT_APP_API_URL}/allHoldings`).then((res) => {
-      // console.log(res.data);
-      setAllHoldings(res.data);
-    });
+    const fetchHoldings = async () => {
+      try {
+        setLoading(true);
+        // FIX: Added withCredentials: true to send authentication cookie
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/allHoldings`,
+          { withCredentials: true } // <-- THIS WAS MISSING!
+        );
+        
+        console.log("Holdings response:", response.data); // Debug log
+        setAllHoldings(response.data);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching holdings:", err);
+        setError("Failed to fetch holdings. Please make sure you're logged in.");
+        setAllHoldings([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHoldings();
   }, []);
 
-  // const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+  // Show loading state
+  if (loading) {
+    return <div>Loading holdings...</div>;
+  }
+
+  // Show error state
+  if (error) {
+    return <div className="error">{error}</div>;
+  }
+
+  // The rest of your component remains the same...
   const labels = allHoldings.map((subArray) => subArray["name"]);
 
   const data = {
@@ -27,22 +55,6 @@ const Holdings = () => {
       },
     ],
   };
-
-  // export const data = {
-  //   labels,
-  //   datasets: [
-  // {
-  //   label: 'Dataset 1',
-  //   data: labels.map(() => faker.datatype.number({ min: 0, max: 1000 })),
-  //   backgroundColor: 'rgba(255, 99, 132, 0.5)',
-  // },
-  //     {
-  //       label: 'Dataset 2',
-  //       data: labels.map(() => faker.datatype.number({ min: 0, max: 1000 })),
-  //       backgroundColor: 'rgba(53, 162, 235, 0.5)',
-  //     },
-  //   ],
-  // };
 
   return (
     <>
