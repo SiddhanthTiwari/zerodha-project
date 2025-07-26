@@ -7,6 +7,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const bcrypt = require("bcryptjs");
 
+const {verifyToken}=require("./verifyToken");
 const { createSecretToken } = require("./SecretToken");
 const UserModel = require("./schemas/UserSchema");
 const { HoldingModel } = require("./model/HoldingModel");
@@ -18,8 +19,14 @@ const url = process.env.MONGO_URL;
 const app = express();
 
 app.use(cors({
-    origin: ["http://localhost:3000", "https://zerodha-frontend.onrender.com","https://zerodha-dashboard-2cvo.onrender.com"],
-    credentials: true
+    origin: [
+        "http://localhost:3001",
+        "https://zerodha-frontend.onrender.com",
+        "https://zerodha-dashboard-2cvo.onrender.com"
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"]
 }));
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -204,17 +211,17 @@ mongoose.connect(url, {
 //     res.send("Done");
 // });
 
-app.get("/allHoldings", async (req, res) => {
+app.get("/allHoldings",verifyToken,async (req, res) => {
     let allHoldings = await HoldingModel.find({});
     res.json(allHoldings);
 });
 
-app.get("/allPositions", async (req, res) => {
+app.get("/allPositions",verifyToken, async (req, res) => {
     let allPositions = await PositionModel.find({});
     res.json(allPositions);
 });
 
-app.get("/newOrder", async (req, res) => {
+app.get("/newOrder",verifyToken, async (req, res) => {
     let allOrders = await OrderModel.find({ type: "sell" });
     res.json(allOrders);
 });
@@ -278,12 +285,12 @@ app.post("/signup", async (req, res) => {
 
         // Set cookie
         res.cookie("token", token, {
-            withCredentials: true,
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 24 * 60 * 60 * 1000 // 24 hours
-        });
+    withCredentials: true,
+    httpOnly: true,
+    secure: true,
+    sameSite: "None", // important for cross-site cookies
+    maxAge: 24 * 60 * 60 * 1000 // 24h
+});
 
         // Send response (exclude password)
         const userResponse = {

@@ -75,7 +75,7 @@ export default function Signup() {
 
         try {
             const response = await axios.post(
-                "http://localhost:3002/signup",
+                `${process.env.REACT_APP_API_URL}/signup`,
                 formData,
                 {
                     withCredentials: true,
@@ -87,10 +87,7 @@ export default function Signup() {
 
             if (response.data.success) {
                 alert('Account created successfully!');
-                // Redirect to login or dashboard
                 navigate('/login');
-                // Or you could redirect to dashboard if auto-login is implemented
-                // navigate('/dashboard');
             }
 
         } catch (error) {

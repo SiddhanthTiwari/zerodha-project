@@ -4,20 +4,19 @@ import { VerticalGraph } from "./VerticalGraph";
 
 const Holdings = () => {
   const [allHoldings, setAllHoldings] = useState([]);
-  const [loading, setLoading] = useState(true); // Added loading state
-  const [error, setError] = useState(null); // Added error state
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchHoldings = async () => {
       try {
         setLoading(true);
-        // FIX: Added withCredentials: true to send authentication cookie
         const response = await axios.get(
           `${process.env.REACT_APP_API_URL}/allHoldings`,
-          { withCredentials: true } // <-- THIS WAS MISSING!
+          { withCredentials: true }
         );
         
-        console.log("Holdings response:", response.data); // Debug log
+        console.log("Holdings response:", response.data);
         setAllHoldings(response.data);
         setError(null);
       } catch (err) {
@@ -32,7 +31,7 @@ const Holdings = () => {
     fetchHoldings();
   }, []);
 
-  // Show loading state
+  
   if (loading) {
     return <div>Loading holdings...</div>;
   }
